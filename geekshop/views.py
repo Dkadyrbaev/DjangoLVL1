@@ -14,4 +14,4 @@ def contacts(request):
     context = {
         'title': title,
     }
-    return render(request, 'geekshop/contact.html')
+    return render(request, 'geekshop/contact.html', context)
