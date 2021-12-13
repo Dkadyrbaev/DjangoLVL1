@@ -10,6 +10,11 @@
             <a href="{%  url 'auth:edit' %}">
                 {{ user.first_name|default:'Пользователь' }}
             </a>
+            <a href="{% url 'basket:view' %}">
+
+                    {% if basket %} ({{ basket|length }}) {% endif %}
+
+            </a>
         </li>
         {% endif %}
 
