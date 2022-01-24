@@ -36,7 +36,7 @@
                         <tbody>
                         {% for user in objects %}
                             <tr>
-                                <td><a href="{#% url 'admin_staff:user_update' user.id %#}" style="color: dodgerblue">{{ user.username }}</a></td>
+                                <td><a href="{% url 'admin_staff:user_update' user.id %}" style="color: dodgerblue">{{ user.username }}</a></td>
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
@@ -53,6 +53,14 @@
                                     {% else %}
                                         <i class="fa fa-times-circle"></i>
                                     {% endif %}
+                                </td>
+
+                                <td class="text-center">
+                                    <button>
+                                        <a href={% url 'admin_staff:user_delete' user.pk %}>
+                                            удалить/восстановить
+                                        </a>
+                                    </button>
                                 </td>
                             </tr>
                         {% endfor %}
