@@ -1,14 +1,17 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib import auth
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
+from authapp.models import ShopUser
 
 
 def login(request):
     title = 'вход'
 
     login_form = ShopUserLoginForm(data=request.POST or None)
+
     next = request.GET['next'] if 'next' in request.GET.keys() else ''
 
     if request.method == 'POST' and login_form.is_valid():
@@ -39,11 +42,19 @@ def logout(request):
 def register(request):
     title = 'регистрация'
 
+    def send_verify_link(user):
+        verify_link = reverse('auth:verify', args=[user.email, user.activation_key])
+        subject = f'Для активации пользователя {user.username} пройдите по ссылке'
+        message = f'Для подтверждения учётной записи {user.username} на портале\n' \
+                  f'{settings.DOMAIN_NAME} пройдите по ссылке {settings.DOMAIN_NAME}{verify_link}'
+        return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
     if request.method == 'POST':
         register_form = ShopUserRegisterForm(request.POST, request.FILES)
-        if register_form.is_valid():
-            register_form.save()
 
+        if register_form.is_valid():
+            user = register_form.save()
+            send_verify_link(user)
             return HttpResponseRedirect(reverse('auth:login'))
     else:
         register_form = ShopUserRegisterForm()
